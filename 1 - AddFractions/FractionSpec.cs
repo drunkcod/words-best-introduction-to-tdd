@@ -5,7 +5,6 @@ namespace AddFractions
 {
 	struct Fraction
 	{
-		
 		public Fraction(int n) : this(n, 1) { }
 
 		public Fraction(int n, int d) {
@@ -22,8 +21,7 @@ namespace AddFractions
 			? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
 			: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
 		
-
-		public static bool operator==(Fraction lhs, Fraction rhs) => lhs.Numerator == rhs.Numerator;
+		public static bool operator==(Fraction lhs, Fraction rhs) => lhs.Numerator == rhs.Numerator && lhs.Denominator == rhs.Denominator;
 		public static bool operator!=(Fraction lhs, Fraction rhs) => !(lhs == rhs);
 
 		public override string ToString() => $"{Numerator}/{Denominator}";
@@ -60,5 +58,8 @@ namespace AddFractions
 			Check.That(() => new Fraction(1, 2) + new Fraction(2, 5) == new Fraction(9, 10));
 
 		public void denominator_cant_be_zero() => Check.Exception<ArgumentException>(() => new Fraction(1, 0));
+
+		public void equality_checks_denomniator() => Check.That(() => !(new Fraction(1, 2) == new Fraction(1, 3)));
+
     }
 }
