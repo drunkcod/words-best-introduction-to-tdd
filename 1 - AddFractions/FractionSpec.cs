@@ -29,7 +29,9 @@ namespace AddFractions
 		public void add_something_to_zero() {
 			var something = new Fraction(5);
 			Check.That(() => new Fraction(0) + something == something);
-
 		}
+
+		public void add_something_to_something_else() =>
+			Check.That(() => new Fraction(-3) + new Fraction(1) == new Fraction(-2));
     }
 }
