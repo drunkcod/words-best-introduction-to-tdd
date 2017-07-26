@@ -1,4 +1,5 @@
 ﻿using Cone;
+using System;
 
 namespace AddFractions
 {
@@ -7,7 +8,8 @@ namespace AddFractions
 		
 		public Fraction(int n) : this(n, 1) { }
 
-		public Fraction(int n, int d) { 
+		public Fraction(int n, int d) {
+			if(d == 0) throw new ArgumentOutOfRangeException(nameof(d));
 			this.Numerator = n;
 			this.Denominator = d;
 		}
@@ -56,5 +58,7 @@ namespace AddFractions
 
 		public void add_with_different_denomoniators() =>
 			Check.That(() => new Fraction(1, 2) + new Fraction(2, 5) == new Fraction(9, 10));
+
+		public void denominator_cant_be_zero() => Check.Exception<ArgumentException>(() => new Fraction(1, 0));
     }
 }
