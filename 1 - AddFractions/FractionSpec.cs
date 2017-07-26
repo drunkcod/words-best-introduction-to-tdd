@@ -21,12 +21,23 @@ namespace AddFractions
 			? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
 			: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
 		
-		public static bool operator==(Fraction lhs, Fraction rhs) => lhs.Numerator == rhs.Numerator && lhs.Denominator == rhs.Denominator;
+		public static bool operator==(Fraction lhs, Fraction rhs) {
+			var a = lhs.Reduce();
+			var b = rhs.Reduce();
+			return a.Numerator == b.Numerator && a.Denominator == b.Denominator;
+		}
 		public static bool operator!=(Fraction lhs, Fraction rhs) => !(lhs == rhs);
 
 		public override string ToString() => $"{Numerator}/{Denominator}";
 		public override bool Equals(object obj) => obj is Fraction ? this == (Fraction)obj : base.Equals(obj);
 		public override int GetHashCode() => Numerator << 16 | Denominator;
+
+		public Fraction Reduce() {
+			var result = Math.DivRem(Numerator, Denominator, out int reminder);
+			if(reminder == 0)
+				return new Fraction(result, 1);
+			return this;
+		}
 	}
 
 	[Describe(typeof(Fraction))]
@@ -60,6 +71,12 @@ namespace AddFractions
 		public void denominator_cant_be_zero() => Check.Exception<ArgumentException>(() => new Fraction(1, 0));
 
 		public void equality_checks_denomniator() => Check.That(() => !(new Fraction(1, 2) == new Fraction(1, 3)));
+
+		public void reduce() => 
+			Check.That(
+				() => new Fraction(4, 4).Reduce() == new Fraction(1),
+				() => new Fraction(4, 2).Reduce() == new Fraction(2),
+				() => new Fraction(2, 4).Reduce() == new Fraction(1, 2));
 
     }
 }
