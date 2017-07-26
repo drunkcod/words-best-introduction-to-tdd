@@ -4,15 +4,29 @@ namespace AddFractions
 {
 	struct Fraction
 	{
-		readonly int n;
-		public Fraction(int n) { this.n = n;}
+		
+		public Fraction(int n) : this(n, 1) { }
 
-		public static Fraction operator+(Fraction lhs, Fraction rhs) => new Fraction(lhs.n + rhs.n);
+		public Fraction(int n, int d) { 
+			this.Numerator = n;
+			this.Denominator = d;
+		}
 
-		public static bool operator==(Fraction lhs, Fraction rhs) => lhs.n == rhs.n;
+		public readonly int Numerator;
+		public readonly int Denominator;
+
+		public static Fraction operator+(Fraction lhs, Fraction rhs) =>
+			lhs.Denominator == rhs.Denominator
+			? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
+			: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
+		
+
+		public static bool operator==(Fraction lhs, Fraction rhs) => lhs.Numerator == rhs.Numerator;
 		public static bool operator!=(Fraction lhs, Fraction rhs) => !(lhs == rhs);
 
-		public override string ToString() => n.ToString();
+		public override string ToString() => $"{Numerator}/{Denominator}";
+		public override bool Equals(object obj) => obj is Fraction ? this == (Fraction)obj : base.Equals(obj);
+		public override int GetHashCode() => Numerator << 16 | Denominator;
 	}
 
 	[Describe(typeof(Fraction))]
@@ -33,5 +47,14 @@ namespace AddFractions
 
 		public void add_something_to_something_else() =>
 			Check.That(() => new Fraction(-3) + new Fraction(1) == new Fraction(-2));
+
+		public void add_with_common_denominator() =>
+			Check.With(() => new Fraction(1, 3) + new Fraction(1, 3)).That(
+				sum => sum == new Fraction(2, 3),
+				sum => sum.Numerator == 2,
+				sum => sum.Denominator == 3);
+
+		public void add_with_different_denomoniators() =>
+			Check.That(() => new Fraction(1, 2) + new Fraction(2, 5) == new Fraction(9, 10));
     }
 }
