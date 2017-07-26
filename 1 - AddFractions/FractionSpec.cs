@@ -7,7 +7,7 @@ namespace AddFractions
 		readonly int n;
 		public Fraction(int n) { this.n = n;}
 
-		public static Fraction operator+(Fraction lhs, Fraction rhs) => lhs;
+		public static Fraction operator+(Fraction lhs, Fraction rhs) => new Fraction(lhs.n + rhs.n);
 
 		public static bool operator==(Fraction lhs, Fraction rhs) => lhs.n == rhs.n;
 		public static bool operator!=(Fraction lhs, Fraction rhs) => !(lhs == rhs);
@@ -24,6 +24,12 @@ namespace AddFractions
 		public void add_zero_to_something() {
 			var something = new Fraction(3);
 			Check.That(() => something + new Fraction(0) == something);
+		}
+
+		public void add_something_to_zero() {
+			var something = new Fraction(5);
+			Check.That(() => new Fraction(0) + something == something);
+
 		}
     }
 }
