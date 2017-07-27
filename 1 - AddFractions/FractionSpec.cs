@@ -21,22 +21,30 @@ namespace AddFractions
 			? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
 			: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
 		
-		public static bool operator==(Fraction lhs, Fraction rhs) {
-			var a = lhs.Reduce();
-			var b = rhs.Reduce();
-			return a.Numerator == b.Numerator && a.Denominator == b.Denominator;
-		}
-		public static bool operator!=(Fraction lhs, Fraction rhs) => !(lhs == rhs);
+		public static bool operator==(Fraction a, Fraction b) => a.Numerator == b.Numerator && a.Denominator == b.Denominator;
+		public static bool operator!=(Fraction a, Fraction b) => !(a == b);
 
 		public override string ToString() => $"{Numerator}/{Denominator}";
 		public override bool Equals(object obj) => obj is Fraction ? this == (Fraction)obj : base.Equals(obj);
 		public override int GetHashCode() => Numerator << 16 | Denominator;
 
 		public Fraction Reduce() {
-			var result = Math.DivRem(Numerator, Denominator, out int reminder);
-			if(reminder == 0)
-				return new Fraction(result, 1);
-			return this;
+			var gcd = Gcd(Numerator, Denominator);
+			return new Fraction(Numerator / gcd, Denominator / gcd);
+		}
+
+		public static int Gcd(int a, int b) {
+			if(a == 0)
+				return b;
+			while (b != 0) {
+				if(a > b) {
+					var c = a;
+					a = b;
+					b = c;
+				}
+				b = b % a;
+			}
+			return a;
 		}
 	}
 
@@ -78,5 +86,9 @@ namespace AddFractions
 				() => new Fraction(4, 2).Reduce() == new Fraction(2),
 				() => new Fraction(2, 4).Reduce() == new Fraction(1, 2));
 
+		[Row(3, 9, 3)]
+		[Row(63, 273, 21)]
+		[Row(0, 7, 7)]
+		public void gcd(int a, int b, int result) => Check.That(() => Fraction.Gcd(a, b) == result);
     }
 }
