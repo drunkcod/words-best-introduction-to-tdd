@@ -9,17 +9,24 @@ namespace AddFractions
 
 		public Fraction(int n, int d) {
 			if(d == 0) throw new ArgumentOutOfRangeException(nameof(d));
-			this.Numerator = n;
-			this.Denominator = d;
+			if(d > 0) {
+				this.Numerator = n;
+				this.Denominator = d;
+			} else {
+				this.Numerator = -n;
+				this.Denominator = -d;
+			}
 		}
 
 		public readonly int Numerator;
 		public readonly int Denominator;
 
-		public static Fraction operator+(Fraction lhs, Fraction rhs) =>
-			lhs.Denominator == rhs.Denominator
-			? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
-			: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
+		public static Fraction operator+(Fraction lhs, Fraction rhs) {
+			var r = lhs.Denominator == rhs.Denominator
+				? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
+				: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
+			return r.Reduce();
+		}
 		
 		public static bool operator==(Fraction a, Fraction b) => a.Numerator == b.Numerator && a.Denominator == b.Denominator;
 		public static bool operator!=(Fraction a, Fraction b) => !(a == b);
@@ -36,6 +43,7 @@ namespace AddFractions
 		public static int Gcd(int a, int b) {
 			if(a == 0)
 				return b;
+			a = Math.Abs(a);
 			while (b != 0) {
 				if(a > b) {
 					var c = a;
@@ -89,6 +97,15 @@ namespace AddFractions
 		[Row(3, 9, 3)]
 		[Row(63, 273, 21)]
 		[Row(0, 7, 7)]
+		[Row(0, 1, 1)]
+		[Row(-3, 1, 1)]
 		public void gcd(int a, int b, int result) => Check.That(() => Fraction.Gcd(a, b) == result);
+
+		public void add_reduces_result() => Check.That(() => new Fraction(1, 4) + new Fraction(1, 4) == new Fraction(1, 2));
+
+		public void negative_fractions_have_positive_denominators() =>
+			Check.With(() => new Fraction(1, -7)).That(
+				x => x.Numerator == -1,
+				x => x.Denominator == 7);
     }
 }
