@@ -55,21 +55,6 @@ namespace AddFractions
 		public void denominator_cant_be_zero() => Check.Exception<ArgumentException>(() => new Fraction(1, 0));
 		public void denominator_cant_be_sub_zero() => Check.Exception<ArgumentException>(() => new Fraction(1, -1));
 
-		public void reduce() =>
-			Check.That(
-				() => new Fraction(4, 4).Reduce() == Fraction.Create(1),
-				() => new Fraction(4, 2).Reduce() == Fraction.Create(2),
-				() => new Fraction(2, 4).Reduce() == new Fraction(1, 2));
-
-		[DisplayAs("gcd({0}, {1}) == {2}")]
-		[Row(3, 9, 3)]
-		[Row(63, 273, 21)]
-		[Row(0, 7, 7)]
-		[Row(0, 1, 1)]
-		[Row(-3, 1, 1)]
-		[Row(3, -1, 1)]
-		public void gcd(int a, int b, int result) => Check.That(() => Fraction.Gcd(a, b) == result);
-
 		public void create_reduces() => Check.With(() => Fraction.Create(3, 6))
 			.That(x => x.Numerator == 1, x => x.Denominator == 2);
 
@@ -78,14 +63,37 @@ namespace AddFractions
 				x => x.Numerator == -1,
 				x => x.Denominator == 7);
 
-		public void equality() => Check.That(
-			() => new Fraction(1, 4) == new Fraction(2, 8),
-			() => new Fraction(1, 4) != new Fraction(4, 1));
+		public void reduce() =>
+			Check.That(
+				() => new Fraction(4, 4).Reduce() == Fraction.Create(1),
+				() => new Fraction(4, 2).Reduce() == Fraction.Create(2),
+				() => new Fraction(2, 4).Reduce() == new Fraction(1, 2));
 
-		public void equality_normalized_denominators() => Check.That(() => new Fraction(2, 4) == new Fraction(1, 2));
+		[Context("equality")]
+		public class FractionEqualitySpec
+		{
+			public void a_equals_b() => Check.That(
+				() => new Fraction(1, 4) == new Fraction(2, 8),
+				() => new Fraction(1, 4) != new Fraction(4, 1));
 
-		public void equality_checks_denomniator() => Check.That(() => !(new Fraction(1, 2) == new Fraction(1, 3)));
+			public void normalized_denominators() => Check.That(() => new Fraction(2, 4) == new Fraction(1, 2));
+
+			public void checks_denomniator() => Check.That(() => !(new Fraction(1, 2) == new Fraction(1, 3)));
+		}
     }
+
+	[Feature("Number Theory")]
+	public class GcdSpec
+	{
+		[DisplayAs("gcd({0}, {1}) == {2}")]
+		[Row(3, 9, 3)]
+		[Row(63, 273, 21)]
+		[Row(0, 7, 7)]
+		[Row(0, 1, 1)]
+		[Row(-3, 1, 1)]
+		[Row(3, -1, 1)]
+		public void gcd(int a, int b, int result) => Check.That(() => Fraction.Gcd(a, b) == result);
+	}
 
 	[Describe(typeof(Fraction), "adding")]
 	public class FractionAddSpec
