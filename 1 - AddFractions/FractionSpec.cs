@@ -28,7 +28,7 @@ namespace AddFractions
 			return r.Reduce();
 		}
 		
-		public static bool operator==(Fraction a, Fraction b) => a.Numerator == b.Numerator && a.Denominator == b.Denominator;
+		public static bool operator==(Fraction a, Fraction b) => a.Numerator * b.Denominator == b.Numerator * a.Denominator;
 		public static bool operator!=(Fraction a, Fraction b) => !(a == b);
 
 		public override string ToString() => $"{Numerator}/{Denominator}";
@@ -88,12 +88,13 @@ namespace AddFractions
 
 		public void equality_checks_denomniator() => Check.That(() => !(new Fraction(1, 2) == new Fraction(1, 3)));
 
-		public void reduce() => 
+		public void reduce() =>
 			Check.That(
 				() => new Fraction(4, 4).Reduce() == new Fraction(1),
 				() => new Fraction(4, 2).Reduce() == new Fraction(2),
 				() => new Fraction(2, 4).Reduce() == new Fraction(1, 2));
 
+		[DisplayAs("gcd({0}, {1}) == {2}")]
 		[Row(3, 9, 3)]
 		[Row(63, 273, 21)]
 		[Row(0, 7, 7)]
@@ -107,5 +108,7 @@ namespace AddFractions
 			Check.With(() => new Fraction(1, -7)).That(
 				x => x.Numerator == -1,
 				x => x.Denominator == 7);
+
+		public void equality_normalized_denominators() => Check.That(() => new Fraction(2, 4) == new Fraction(1, 2));
     }
 }
