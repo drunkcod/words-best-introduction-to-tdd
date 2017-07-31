@@ -31,12 +31,14 @@ namespace PointOfSale
 		class PosTerminal
 		{
 			public event EventHandler<ItemAddedEventArgs> ItemAdded;
+			public event EventHandler<ItemAddedEventArgs> MissingItem;
 			public event EventHandler<PriceRequiredEventArgs> PriceRequired;
 
 			public void ProcessBarcode(string barcode) {
 				var priceCheck = new PriceRequiredEventArgs(barcode);
 				PriceRequired?.Invoke(this, priceCheck);
-				ItemAdded?.Invoke(this, new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice));
+				var e = new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice);
+				(string.IsNullOrEmpty(e.ItemPrice) ? MissingItem : ItemAdded)?.Invoke(this, e);
 			}
 		}
 
@@ -75,6 +77,22 @@ namespace PointOfSale
 
 			pos.ProcessBarcode("12345");
 			pos.ProcessBarcode("67890");
+		}
+
+		public void signals_unknown_item() {
+			var pos = new PosTerminal();
+			var itemAdded = new EventSpy<ItemAddedEventArgs>();
+			var itemMissing = new EventSpy<ItemAddedEventArgs>((_, e) => Check.That(() => e.Barcode == "No Such Item"));
+
+			pos.ItemAdded += itemAdded;
+			pos.MissingItem += itemMissing;
+
+			pos.ProcessBarcode("No Such Item");
+
+			Check.That(
+				() => !itemAdded.HasBeenCalled,
+				() => itemMissing.HasBeenCalled);
+
 		}
     }
 }
