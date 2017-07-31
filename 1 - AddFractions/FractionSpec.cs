@@ -41,16 +41,10 @@ namespace AddFractions
 		}
 
 		public static int Gcd(int a, int b) {
-			if(a == 0)
-				return b;
-			a = Math.Abs(a);
 			while (b != 0) {
-				if(a > b) {
-					var c = a;
-					a = b;
-					b = c;
-				}
-				b = b % a;
+				var t = b;
+				b = a % b;
+				a = t;
 			}
 			return a;
 		}
