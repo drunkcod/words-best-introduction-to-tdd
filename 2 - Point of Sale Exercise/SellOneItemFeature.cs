@@ -18,12 +18,26 @@ namespace PointOfSale
 			}
 		}
 
+		class PriceRequiredEventArgs : EventArgs 
+		{
+			public readonly string Barcode;
+			public string ItemPrice;
+
+			public PriceRequiredEventArgs(string barcode) {
+				this.Barcode = barcode;
+			}
+		}
+
 		class PosTerminal
 		{
 			public event EventHandler<ItemAddedEventArgs> ItemAdded;
+			public event EventHandler<PriceRequiredEventArgs> PriceRequired;
 
-			public void ProcessBarcode(string barcode) =>
-				ItemAdded?.Invoke(this, new ItemAddedEventArgs(barcode, "$11.50"));
+			public void ProcessBarcode(string barcode) {
+				var priceCheck = new PriceRequiredEventArgs(barcode);
+				PriceRequired?.Invoke(this, priceCheck);
+				ItemAdded?.Invoke(this, new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice));
+			}
 		}
 
 		const string ExistingBarcode = "123456789";
@@ -36,10 +50,31 @@ namespace PointOfSale
 					() => e.Barcode == ExistingBarcode,
 					() => e.ItemPrice == ExpectedPrice));
 
+			pos.PriceRequired += (_, e) => e.ItemPrice = ExpectedPrice;
 			pos.ItemAdded += itemAdded;
 			pos.ProcessBarcode(ExistingBarcode);
 
 			Check.That(() => itemAdded.HasBeenCalled);
+		}
+
+		public void does_price_lookup_on_scanned_item() { 
+			var pos = new PosTerminal();
+
+			var priceRequired = new EventHandler<PriceRequiredEventArgs>((_, e) => {
+				switch(e.Barcode) { 
+					case "12345": e.ItemPrice = "$12.34"; break;
+					case "67890": e.ItemPrice = $"67.89"; break;
+				}
+			});
+			pos.PriceRequired += priceRequired;
+			pos.ItemAdded += (_, e) => {
+				var priceCheck = new PriceRequiredEventArgs(e.Barcode);
+				priceRequired(null, priceCheck);
+				Check.That(() => e.ItemPrice == priceCheck.ItemPrice);
+			};
+
+			pos.ProcessBarcode("12345");
+			pos.ProcessBarcode("67890");
 		}
     }
 }
