@@ -20,12 +20,8 @@ namespace AddFractions
 		public readonly int Numerator;
 		public readonly int Denominator;
 
-		public static Fraction operator+(Fraction lhs, Fraction rhs) {
-			var r = lhs.Denominator == rhs.Denominator
-				? new Fraction(lhs.Numerator + rhs.Numerator, lhs.Denominator)
-				: new Fraction(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
-			return r.Reduce();
-		}
+		public static Fraction operator+(Fraction lhs, Fraction rhs) => 
+			Create(lhs.Numerator * rhs.Denominator + rhs.Numerator * lhs.Denominator, lhs.Denominator * rhs.Denominator);
 		
 		public static bool operator==(Fraction a, Fraction b) => a.Numerator * b.Denominator == b.Numerator * a.Denominator;
 		public static bool operator!=(Fraction a, Fraction b) => !(a == b);
