@@ -7,17 +7,18 @@ namespace PointOfSale
     public class SellOneItemFeature
     {
 		Display display;
+		PriceLookup prices;
 		Sale sale;
-		Action<PriceRequiredEventArgs> getPrice;
 
 		[BeforeEach]
 		public void given_a_terminal_with_attached_display() {
-			getPrice = null;
 			var pos = new PosTerminal();
-			pos.PriceRequired += (_, e) => getPrice?.Invoke(e);
 
 			display = new Display();
 			display.ConnectTo(pos);
+
+			prices = new PriceLookup();
+			prices.ConnectTo(pos);
 
 			sale = new Sale(pos, display);
 		}
@@ -25,8 +26,8 @@ namespace PointOfSale
 		public void scan_a_code_show_the_price() {
 			var existingBarcode = "123456789";
 			var expectedPrice = "$11.50";
-			getPrice = x => x.ItemPrice = expectedPrice;
 			
+			prices.Add(new Barcode(existingBarcode), expectedPrice);
 			ProcessBarcode(existingBarcode);
 			Check.That(() => display.Text == expectedPrice);
 		}
