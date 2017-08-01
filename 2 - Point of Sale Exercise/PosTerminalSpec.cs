@@ -2,6 +2,7 @@
 using Cone.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace PointOfSale
 {
@@ -19,7 +20,7 @@ namespace PointOfSale
 			pos.ItemAdded += itemAdded;
 		}
 
-		class PriceLookup
+		class PriceLookup : IEnumerable<KeyValuePair<Barcode, string>>
 		{
 			readonly Dictionary<string, string> barcodeToPrice = new Dictionary<string, string>();
 
@@ -32,21 +33,31 @@ namespace PointOfSale
 				terminal.PriceRequired += (_, e) => TryGetPrice(e.Barcode, out e.ItemPrice);
 			}
 
+			public IEnumerator<KeyValuePair<Barcode, string>> GetEnumerator() {
+				foreach(var item in barcodeToPrice)
+					yield return new KeyValuePair<Barcode, string>(new Barcode(item.Key), item.Value);
+			}
+
+			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
 			bool TryGetPrice(Barcode barcode, out string itemPrice) => 
 				barcodeToPrice.TryGetValue(barcode.ToString(), out itemPrice);
 		}
 
 		public void does_price_lookup_on_scanned_item() {
-			var prices = new PriceLookup();
-			prices.Add(new Barcode("12345"), "$12.33");
-			prices.Add(new Barcode("67890"), "$67.89");
+			var productOne = new Barcode("12345");
+			var productTwo = new Barcode("67890");
+			var prices = new PriceLookup {
+				{productOne, "$12.34"},
+				{productTwo, "$67.89"},
+			};
 
-			prices.ConnectTo(pos);
+			prices.ConnectTo(pos);			
 			var priceSpy = new EventSpy<PriceRequiredEventArgs>((_, e) => Check.That(() => e.ItemPrice == prices[e.Barcode]));			
 			pos.PriceRequired += priceSpy;
 
-			pos.ProcessBarcode(new Barcode("12345"));
-			pos.ProcessBarcode(new Barcode("67890"));
+			pos.ProcessBarcode(productOne);
+			pos.ProcessBarcode(productTwo);
 
 			Assume.That(() => priceSpy.HasBeenCalled);
 		}
