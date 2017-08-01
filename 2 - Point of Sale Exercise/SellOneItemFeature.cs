@@ -1,4 +1,5 @@
 ﻿using Cone;
+using System;
 
 namespace PointOfSale
 {
@@ -30,6 +31,19 @@ namespace PointOfSale
 			pos.ProcessBarcode(new Barcode("No Such Thing"));
 
 			Check.That(() => display.Text == "Missing Product <No Such Thing>");
+		}
+
+		public void display_scanning_error_for_empty_barcode() {
+			ProcessBarcode(string.Empty);
+			Check.That(() => display.Text == "Scanning Error: Empty Barcode");
+		}
+
+		void ProcessBarcode(string input) {
+			try {
+				pos.ProcessBarcode(new Barcode(input));
+			} catch(ArgumentException){
+				display.Text = "Scanning Error: Empty Barcode";
+			}
 		}
     }
 }
