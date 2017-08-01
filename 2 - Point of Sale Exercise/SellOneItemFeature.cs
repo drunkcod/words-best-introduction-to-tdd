@@ -1,5 +1,4 @@
 ﻿using Cone;
-using System;
 
 namespace PointOfSale
 {
@@ -33,11 +32,4 @@ namespace PointOfSale
 			Check.That(() => display.Text == "Missing Product <No Such Thing>");
 		}
     }
-
-	[Describe(typeof(Barcode))]
-	public class BarcodeSpec
-	{
-		public void barcode_cant_be_empty() => Check.Exception<ArgumentException>(() => new Barcode(string.Empty));
-		public void barcode_cant_be_null() => Check.Exception<ArgumentException>(() => new Barcode(null));
-	}
 }
