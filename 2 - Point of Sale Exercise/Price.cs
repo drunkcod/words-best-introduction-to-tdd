@@ -2,7 +2,7 @@
 
 namespace PointOfSale
 {
-	struct Price
+	public struct Price
 	{
 		readonly decimal value;
 

@@ -2,62 +2,47 @@
 
 namespace PointOfSale
 {
-	[Feature("Selling multiple items")]
+	[Feature("Selling items")]
 	public class SellingMultipleItemsFeature
 	{
-		Display display;
-		PriceLookup prices;
-		Sale sale;
-
-		[BeforeEach]
-		public void given_a_terminal_with_attached_display() {
-			var pos = new PosTerminal();
-
-			display = new Display();
-			display.ConnectTo(pos);
-
-			prices = new PriceLookup();
-			prices.ConnectTo(pos);
-
-			sale = new Sale(pos, display);
-		}
+		public TerminalAndDisplayContext Pos = new TerminalAndDisplayContext();
 
 		public void total_when_no_items_added() {
-			sale.PressTotal();
-			Check.That(() => display.Text == "No Sale in Progress, Try Scanning a Product");
+			Pos.PressTotal();
+			Check.That(() => Pos.DisplayText == "No Sale in Progress, Try Scanning a Product");
 		}
 
 		public void total_with_single_product() {
-			prices.Add(new Barcode("A"), new Price(1.23m));
+			Pos.AddPrice("A", new Price(1.23m));
 
-			sale.ProcessBarcode("A");
-			sale.PressTotal();
+			Pos.ProcessBarcode("A");
+			Pos.PressTotal();
 
-			Check.That(() => display.Text == "Total: $1.23");
+			Check.That(() => Pos.DisplayText == "Total: $1.23");
 		}
 
 		public void total_multiple_products() {
-			prices.Add(new Barcode("A"), new Price(8.50m));
-			prices.Add(new Barcode("B"), new Price(12.75m));
-			prices.Add(new Barcode("C"), new Price(3.30m));
+			Pos.AddPrice("A", new Price(8.50m));
+			Pos.AddPrice("B", new Price(12.75m));
+			Pos.AddPrice("C", new Price(3.30m));
 
-			sale.ProcessBarcode("A");
-			sale.ProcessBarcode("B");
-			sale.ProcessBarcode("C");
-			sale.PressTotal();
+			Pos.ProcessBarcode("A");
+			Pos.ProcessBarcode("B");
+			Pos.ProcessBarcode("C");
+			Pos.PressTotal();
 
-			Check.That(() => display.Text == "Total: $24.55");
+			Check.That(() => Pos.DisplayText == "Total: $24.55");
 		}
 
 		public void total_with_missing_product() {
-			prices.Add(new Barcode("A"), new Price(6.66m));
+			Pos.AddPrice("A", new Price(6.66m));
 
-			sale.ProcessBarcode("A");
-			sale.ProcessBarcode("B");
-			sale.ProcessBarcode("C");
-			sale.PressTotal();
+			Pos.ProcessBarcode("A");
+			Pos.ProcessBarcode("B");
+			Pos.ProcessBarcode("C");
+			Pos.PressTotal();
 
-			Check.That(() => display.Text == "Total: $6.66");
+			Check.That(() => Pos.DisplayText == "Total: $6.66");
 		}
 	}
 }
