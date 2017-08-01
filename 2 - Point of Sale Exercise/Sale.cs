@@ -8,14 +8,13 @@ namespace PointOfSale
 	{
 		readonly PosTerminal terminal;
 		readonly Display display;
-
-		readonly List<Price> total = new List<Price>();
+		readonly List<Price> items = new List<Price>();
 
 		public Sale(PosTerminal terminal, Display display) { 
 			this.terminal = terminal;
 			this.display = display;
 			
-			terminal.ItemAdded += (_, e) => total.Add(e.ItemPrice);
+			terminal.ItemAdded += (_, e) => items.Add(e.ItemPrice);
 		}
 
 		public void ProcessBarcode(string input) {
@@ -27,10 +26,13 @@ namespace PointOfSale
 		}
 
 		public void PressTotal() {
-			if(total.Count > 0)
-				display.DisplayTotal(total.Aggregate((a, b) => a + b));
+			if(IsSaleInProgress)
+				display.DisplayTotal(TotalPrice);
 			else
 				display.DisplayError("No Sale in Progress, Try Scanning a Product");
 		}
+
+		Price TotalPrice => items.Aggregate((a, b) => a + b);
+		bool IsSaleInProgress => items.Count > 0;
 	}
 }
