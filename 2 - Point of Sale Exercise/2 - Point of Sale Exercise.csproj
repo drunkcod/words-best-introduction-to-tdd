@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Display.cs" />
     <Compile Include="PosTerminal.cs" />
     <Compile Include="PosTerminalSpec.cs" />
     <Compile Include="SellOneItemFeature.cs" />

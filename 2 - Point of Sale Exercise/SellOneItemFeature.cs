@@ -2,22 +2,23 @@
 
 namespace PointOfSale
 {
-	class Display
-	{
-		public string Text;
-	}
-
 	[Feature("Sell one item")]
     public class SellOneItemFeature
     {
-		const string ExistingBarcode = "123456789";
-		const string ExpectedPrice = "$11.50";
+		PosTerminal pos;
+		Display display;
 
-		public void scan_a_code_show_the_price() {
-			var pos = new PosTerminal();
-			var display = new Display();
+		[BeforeEach]
+		public void given_a_terminal_with_attached_display() {
+			pos = new PosTerminal();
+			display = new Display();
 
 			pos.Connect(display);
+		}
+
+		public void scan_a_code_show_the_price() {
+			const string ExistingBarcode = "123456789";
+			const string ExpectedPrice = "$11.50";
 
 			pos.PriceRequired += (_, e) => e.ItemPrice = ExpectedPrice;
 			pos.ProcessBarcode(ExistingBarcode);
@@ -26,11 +27,6 @@ namespace PointOfSale
 		}
 
 		public void display_missing_message_for_missing_product() {
-			var pos = new PosTerminal();
-			var display = new Display();
-
-			pos.Connect(display);
-
 			pos.ProcessBarcode("No Such Thing");
 
 			Check.That(() => display.Text == "Missing Product <No Such Thing>");
