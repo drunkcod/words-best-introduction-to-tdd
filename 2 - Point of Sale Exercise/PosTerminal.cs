@@ -5,9 +5,9 @@ namespace PointOfSale
 	class ItemAddedEventArgs : EventArgs
 	{
 		public readonly Barcode Barcode;
-		public readonly string ItemPrice;
+		public readonly Price? ItemPrice;
 
-		public ItemAddedEventArgs(Barcode barcode, string itemPrice) { 
+		public ItemAddedEventArgs(Barcode barcode, Price? itemPrice) { 
 			this.Barcode = barcode;
 			this.ItemPrice = itemPrice;
 		}
@@ -16,7 +16,7 @@ namespace PointOfSale
 	class PriceRequiredEventArgs : EventArgs 
 	{
 		public readonly Barcode Barcode;
-		public string ItemPrice;
+		public Price? ItemPrice;
 
 		public PriceRequiredEventArgs(Barcode barcode) {
 			this.Barcode = barcode;
@@ -35,7 +35,7 @@ namespace PointOfSale
 			var priceCheck = new PriceRequiredEventArgs(barcode);
 			PriceRequired?.Invoke(this, priceCheck);
 			var e = new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice);
-			(string.IsNullOrEmpty(e.ItemPrice) ? MissingItem : ItemAdded)?.Invoke(this, e);
+			(e.ItemPrice.HasValue ? ItemAdded : MissingItem )?.Invoke(this, e);
 		}
 	}
 }

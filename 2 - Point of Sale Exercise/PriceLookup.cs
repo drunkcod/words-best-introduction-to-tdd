@@ -3,27 +3,30 @@ using System.Collections;
 
 namespace PointOfSale
 {
-	class PriceLookup : IEnumerable<KeyValuePair<Barcode, string>>
+	class PriceLookup : IEnumerable<KeyValuePair<Barcode, Price>>
 	{
-		readonly Dictionary<string, string> barcodeToPrice = new Dictionary<string, string>();
+		readonly Dictionary<string, Price> barcodeToPrice = new Dictionary<string, Price>();
 
-		public string this[Barcode barcode] => barcodeToPrice[barcode.ToString()];
+		public Price this[Barcode barcode] => barcodeToPrice[barcode.ToString()];
 
-		public void Add(Barcode item, string price) =>
+		public void Add(Barcode item, Price price) =>
 			barcodeToPrice.Add(item.ToString(), price);
 
 		public void ConnectTo(PosTerminal terminal) {
-			terminal.PriceRequired += (_, e) => TryGetPrice(e.Barcode, out e.ItemPrice);
+			terminal.PriceRequired += (_, e) => {
+				if(TryGetPrice(e.Barcode, out Price foundPrice))
+					e.ItemPrice = foundPrice;
+			};
 		}
 
-		public IEnumerator<KeyValuePair<Barcode, string>> GetEnumerator() {
+		public IEnumerator<KeyValuePair<Barcode, Price>> GetEnumerator() {
 			foreach(var item in barcodeToPrice)
-				yield return new KeyValuePair<Barcode, string>(new Barcode(item.Key), item.Value);
+				yield return new KeyValuePair<Barcode, Price>(new Barcode(item.Key), item.Value);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		bool TryGetPrice(Barcode barcode, out string itemPrice) => 
+		bool TryGetPrice(Barcode barcode, out Price itemPrice) => 
 			barcodeToPrice.TryGetValue(barcode.ToString(), out itemPrice);
 	}
 }

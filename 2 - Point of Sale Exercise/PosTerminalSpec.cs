@@ -22,12 +22,12 @@ namespace PointOfSale
 			var productOne = new Barcode("12345");
 			var productTwo = new Barcode("67890");
 			var prices = new PriceLookup {
-				{productOne, "$12.34"},
-				{productTwo, "$67.89"},
+				{productOne, new Price(12.34m)},
+				{productTwo, new Price(67.89m)},
 			};
 
 			prices.ConnectTo(pos);			
-			var priceSpy = new EventSpy<PriceRequiredEventArgs>((_, e) => Check.That(() => e.ItemPrice == prices[e.Barcode]));			
+			var priceSpy = new EventSpy<PriceRequiredEventArgs>((_, e) => Check.That(() => e.ItemPrice.Value == prices[e.Barcode]));			
 			pos.PriceRequired += priceSpy;
 
 			pos.ProcessBarcode(productOne);

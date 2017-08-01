@@ -25,11 +25,9 @@ namespace PointOfSale
 
 		public void scan_a_code_show_the_price() {
 			var existingBarcode = "123456789";
-			var expectedPrice = "$11.50";
-			
-			prices.Add(new Barcode(existingBarcode), expectedPrice);
+			prices.Add(new Barcode(existingBarcode), new Price(11.50m));
 			ProcessBarcode(existingBarcode);
-			Check.That(() => display.Text == expectedPrice);
+			Check.That(() => display.Text == "$11.50");
 		}
 
 		public void display_missing_message_for_missing_product() {
