@@ -1,10 +1,12 @@
 ﻿using Cone;
-using Cone.Helpers;
-using System;
-using System.Text;
 
 namespace PointOfSale
 {
+	class Display
+	{
+		public string Text;
+	}
+
 	[Feature("Sell one item")]
     public class SellOneItemFeature
     {
@@ -13,13 +15,14 @@ namespace PointOfSale
 
 		public void scan_a_code_show_the_price() {
 			var pos = new PosTerminal();
-			var result = new StringBuilder();
+			var display = new Display();
+
+			pos.Connect(display);
 
 			pos.PriceRequired += (_, e) => e.ItemPrice = ExpectedPrice;
-			pos.ItemAdded += (_, e) => result.Append(e.ItemPrice);
 			pos.ProcessBarcode(ExistingBarcode);
 
-			Check.That(() => result.ToString() == ExpectedPrice);
+			Check.That(() => display.Text == ExpectedPrice);
 		}
     }
 }

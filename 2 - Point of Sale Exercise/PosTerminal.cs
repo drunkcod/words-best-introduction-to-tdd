@@ -35,5 +35,9 @@ namespace PointOfSale
 			var e = new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice);
 			(string.IsNullOrEmpty(e.ItemPrice) ? MissingItem : ItemAdded)?.Invoke(this, e);
 		}
+
+		public void Connect(Display display) {
+			ItemAdded += (_, e) => display.Text = e.ItemPrice;
+		}
 	}
 }
