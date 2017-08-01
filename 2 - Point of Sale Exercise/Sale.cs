@@ -13,7 +13,7 @@ namespace PointOfSale
 			this.terminal = terminal;
 			this.display = display;
 			
-			terminal.ItemAdded += (_, e) => total = total.GetValueOrDefault() + e.ItemPrice;
+			terminal.ItemAdded += (_, e) => total = e.Total;
 		}
 
 		public void ProcessBarcode(string input) {
