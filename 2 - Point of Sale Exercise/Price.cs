@@ -15,5 +15,7 @@ namespace PointOfSale
 
 		public static bool operator==(Price a, Price b) => a.value == b.value;
 		public static bool operator!=(Price a, Price b) => !(a == b);
+
+		public static Price operator+(Price a, Price b) => new Price(a.value + b.value);
 	}
 }

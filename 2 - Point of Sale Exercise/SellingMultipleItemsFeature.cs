@@ -35,5 +35,19 @@ namespace PointOfSale
 
 			Check.That(() => display.Text == "Total: $1.23");
 		}
+
+		public void total_multiple_products() {
+			prices.Add(new Barcode("A"), new Price(8.50m));
+			prices.Add(new Barcode("B"), new Price(12.75m));
+			prices.Add(new Barcode("C"), new Price(3.30m));
+
+			sale.ProcessBarcode("A");
+			sale.ProcessBarcode("B");
+			sale.ProcessBarcode("C");
+			sale.PressTotal();
+
+			Check.That(() => display.Text == "Total: $24.55");
+
+		}
 	}
 }
