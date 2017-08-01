@@ -13,7 +13,7 @@ namespace PointOfSale
 			pos = new PosTerminal();
 			display = new Display();
 
-			pos.Connect(display);
+			display.ConnectTo(pos);
 		}
 
 		public void scan_a_code_show_the_price() {
