@@ -7,6 +7,7 @@ namespace PointOfSale
 		public string Text { get; private set; }
 
 		public void DisplayError(string errorMessage) => Text = errorMessage;
+		public void DisplayTotal(Price totalPrice) => Text = string.Format("Total: ${0}", totalPrice.ToString(CultureInfo.InvariantCulture));
 		void DisplayPrice(Price itemPrice) => Text = string.Format("${0}", itemPrice.ToString(CultureInfo.InvariantCulture));
 		void DisplayMissingProduct(Barcode missingItem) => Text = $"Missing Product <{missingItem}>";
 

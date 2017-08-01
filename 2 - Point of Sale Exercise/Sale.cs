@@ -7,9 +7,13 @@ namespace PointOfSale
 		readonly PosTerminal terminal;
 		readonly Display display;
 
+		Price? total;
+
 		public Sale(PosTerminal terminal, Display display) { 
 			this.terminal = terminal;
 			this.display = display;
+			
+			terminal.ItemAdded += (_, e) => total = e.ItemPrice;
 		}
 
 		public void ProcessBarcode(string input) {
@@ -21,7 +25,10 @@ namespace PointOfSale
 		}
 
 		public void PressTotal() {
-			display.DisplayError("No Sale in Progress, Try Scanning a Product");
+			if(total.HasValue)
+				display.DisplayTotal(total.Value);
+			else
+				display.DisplayError("No Sale in Progress, Try Scanning a Product");
 		}
 	}
 }

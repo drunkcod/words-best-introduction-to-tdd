@@ -26,5 +26,14 @@ namespace PointOfSale
 			sale.PressTotal();
 			Check.That(() => display.Text == "No Sale in Progress, Try Scanning a Product");
 		}
+
+		public void total_with_single_product() {
+			prices.Add(new Barcode("A"), new Price(1.23m));
+
+			sale.ProcessBarcode("A");
+			sale.PressTotal();
+
+			Check.That(() => display.Text == "Total: $1.23");
+		}
 	}
 }
