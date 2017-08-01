@@ -6,8 +6,28 @@ namespace PointOfSale
 	[Feature("Sell one item")]
     public class SellOneItemFeature
     {
+		class Sale
+		{
+			readonly PosTerminal terminal;
+			readonly Display display;
+
+			public Sale(PosTerminal terminal, Display display) { 
+				this.terminal = terminal;
+				this.display = display;
+			}
+
+			public void ProcessBarcode(string input) {
+				try {
+					terminal.ProcessBarcode(new Barcode(input));
+				} catch(ArgumentException){
+					display.Text = "Scanning Error: Empty Barcode";
+				}
+			}
+		}
+
 		PosTerminal pos;
 		Display display;
+		Sale sale;
 
 		[BeforeEach]
 		public void given_a_terminal_with_attached_display() {
@@ -15,6 +35,8 @@ namespace PointOfSale
 			display = new Display();
 
 			display.ConnectTo(pos);
+
+			sale = new Sale(pos, display);
 		}
 
 		public void scan_a_code_show_the_price() {
@@ -36,12 +58,6 @@ namespace PointOfSale
 			Check.That(() => display.Text == "Scanning Error: Empty Barcode");
 		}
 
-		void ProcessBarcode(string input) {
-			try {
-				pos.ProcessBarcode(new Barcode(input));
-			} catch(ArgumentException){
-				display.Text = "Scanning Error: Empty Barcode";
-			}
-		}
+		void ProcessBarcode(string input) => sale.ProcessBarcode(input);
     }
 }
