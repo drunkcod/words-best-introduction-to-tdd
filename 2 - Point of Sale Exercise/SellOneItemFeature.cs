@@ -12,6 +12,7 @@ namespace PointOfSale
 
 		[BeforeEach]
 		public void given_a_terminal_with_attached_display() {
+			getPrice = null;
 			var pos = new PosTerminal();
 			pos.PriceRequired += (_, e) => getPrice?.Invoke(e);
 

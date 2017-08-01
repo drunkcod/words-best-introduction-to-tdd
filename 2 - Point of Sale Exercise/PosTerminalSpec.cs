@@ -1,6 +1,7 @@
 ﻿using Cone;
 using Cone.Helpers;
 using System;
+using System.Collections.Generic;
 
 namespace PointOfSale
 {
@@ -18,25 +19,36 @@ namespace PointOfSale
 			pos.ItemAdded += itemAdded;
 		}
 
+		class PriceLookup
+		{
+			readonly Dictionary<string, string> barcodeToPrice = new Dictionary<string, string>();
+
+			public string this[Barcode barcode] => barcodeToPrice[barcode.ToString()];
+
+			public void Add(Barcode item, string price) =>
+				barcodeToPrice.Add(item.ToString(), price);
+
+			public void ConnectTo(PosTerminal terminal) {
+				terminal.PriceRequired += (_, e) => TryGetPrice(e.Barcode, out e.ItemPrice);
+			}
+
+			bool TryGetPrice(Barcode barcode, out string itemPrice) => 
+				barcodeToPrice.TryGetValue(barcode.ToString(), out itemPrice);
+		}
+
 		public void does_price_lookup_on_scanned_item() {
-			var priceRequired = new EventHandler<PriceRequiredEventArgs>((_, e) => {
-				switch(e.Barcode.ToString()) { 
-					case "12345": e.ItemPrice = "$12.34"; break;
-					case "67890": e.ItemPrice = $"67.89"; break;
-				}
-			});
-			var priceSpy = new EventSpy<PriceRequiredEventArgs>(priceRequired);			
+			var prices = new PriceLookup();
+			prices.Add(new Barcode("12345"), "$12.33");
+			prices.Add(new Barcode("67890"), "$67.89");
+
+			prices.ConnectTo(pos);
+			var priceSpy = new EventSpy<PriceRequiredEventArgs>((_, e) => Check.That(() => e.ItemPrice == prices[e.Barcode]));			
 			pos.PriceRequired += priceSpy;
 
 			pos.ProcessBarcode(new Barcode("12345"));
 			pos.ProcessBarcode(new Barcode("67890"));
 
 			Assume.That(() => priceSpy.HasBeenCalled);
-			itemAdded.Then((_, e) => {
-				var priceCheck = new PriceRequiredEventArgs(e.Barcode);
-				priceRequired(null, priceCheck);
-				Check.That(() => e.ItemPrice != priceCheck.ItemPrice);
-			});
 		}
 
 		public void signals_unknown_item() {
