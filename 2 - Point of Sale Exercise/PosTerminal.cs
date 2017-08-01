@@ -30,6 +30,8 @@ namespace PointOfSale
 		public event EventHandler<PriceRequiredEventArgs> PriceRequired;
 
 		public void ProcessBarcode(Barcode barcode) {
+			if(barcode == null)
+				throw new ArgumentNullException(nameof(barcode));
 			var priceCheck = new PriceRequiredEventArgs(barcode);
 			PriceRequired?.Invoke(this, priceCheck);
 			var e = new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice);

@@ -48,5 +48,8 @@ namespace PointOfSale
 			Assume.That(() => !itemAdded.HasBeenCalled);
 			itemMissing.Then((_, e) => Check.That(() => e.Barcode.ToString() == "No Such Item"));
 		}
+
+		public void null_barcode() =>
+			Check.Exception<ArgumentNullException>(() => pos.ProcessBarcode(null));
 	}
 }
