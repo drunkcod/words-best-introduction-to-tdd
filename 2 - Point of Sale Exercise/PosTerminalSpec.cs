@@ -37,7 +37,7 @@ namespace PointOfSale
 		}
 
 		public void signals_unknown_item() {
-			var itemMissing = new EventSpy<ItemAddedEventArgs>();
+			var itemMissing = new EventSpy<MissingItemEventArgs>();
 			pos.MissingItem += itemMissing;
 
 			pos.ProcessBarcode(new Barcode("Unknown Item"));

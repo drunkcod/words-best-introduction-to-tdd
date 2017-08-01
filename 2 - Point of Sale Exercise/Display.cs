@@ -11,7 +11,7 @@ namespace PointOfSale
 		void DisplayMissingProduct(Barcode missingItem) => Text = $"Missing Product <{missingItem}>";
 
 		public void ConnectTo(PosTerminal terminal) {
-			terminal.ItemAdded += (_, e) => DisplayPrice(e.ItemPrice.Value);
+			terminal.ItemAdded += (_, e) => DisplayPrice(e.ItemPrice);
 			terminal.MissingItem += (_, e) => DisplayMissingProduct(e.Barcode);
 		}
 	}

@@ -5,9 +5,9 @@ namespace PointOfSale
 	class ItemAddedEventArgs : EventArgs
 	{
 		public readonly Barcode Barcode;
-		public readonly Price? ItemPrice;
+		public readonly Price ItemPrice;
 
-		public ItemAddedEventArgs(Barcode barcode, Price? itemPrice) { 
+		public ItemAddedEventArgs(Barcode barcode, Price itemPrice) { 
 			this.Barcode = barcode;
 			this.ItemPrice = itemPrice;
 		}
@@ -21,12 +21,23 @@ namespace PointOfSale
 		public PriceRequiredEventArgs(Barcode barcode) {
 			this.Barcode = barcode;
 		}
+
+		public bool PriceFound => ItemPrice.HasValue;
+	}
+
+	class MissingItemEventArgs : EventArgs
+	{
+		public readonly Barcode Barcode;
+
+		public MissingItemEventArgs(Barcode barcode) {
+			this.Barcode = barcode;
+		}
 	}
 
 	class PosTerminal
 	{
 		public event EventHandler<ItemAddedEventArgs> ItemAdded;
-		public event EventHandler<ItemAddedEventArgs> MissingItem;
+		public event EventHandler<MissingItemEventArgs> MissingItem;
 		public event EventHandler<PriceRequiredEventArgs> PriceRequired;
 
 		public void ProcessBarcode(Barcode barcode) {
@@ -34,8 +45,9 @@ namespace PointOfSale
 				throw new ArgumentNullException(nameof(barcode));
 			var priceCheck = new PriceRequiredEventArgs(barcode);
 			PriceRequired?.Invoke(this, priceCheck);
-			var e = new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice);
-			(e.ItemPrice.HasValue ? ItemAdded : MissingItem )?.Invoke(this, e);
+			if(priceCheck.PriceFound)
+				ItemAdded?.Invoke(this, new ItemAddedEventArgs(priceCheck.Barcode, priceCheck.ItemPrice.Value));
+			else MissingItem?.Invoke(this, new MissingItemEventArgs(priceCheck.Barcode));
 		}
 	}
 }
