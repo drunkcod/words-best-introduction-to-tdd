@@ -16,7 +16,7 @@ namespace PointOfSale
 			try {
 				terminal.ProcessBarcode(new Barcode(input));
 			} catch(ArgumentException){
-				display.Text = "Scanning Error: Empty Barcode";
+				display.DisplayError("Scanning Error: Empty Barcode");
 			}
 		}
 	}
