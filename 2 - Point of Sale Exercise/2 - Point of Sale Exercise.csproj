@@ -30,11 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cone, Version=2017.7.31.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\Cone.2017.7.31.1\lib\net452\Cone.dll</HintPath>
+    <Reference Include="Cone, Version=2017.8.1.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Build\packages\Cone.2017.8.1.2\lib\net452\Cone.dll</HintPath>
     </Reference>
     <Reference Include="Cone.Expectations, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Build\packages\Cone.2017.7.31.1\lib\net452\Cone.Expectations.dll</HintPath>
+      <HintPath>..\Build\packages\Cone.2017.8.1.2\lib\net452\Cone.Expectations.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -26,14 +26,14 @@ namespace PointOfSale
 				{productTwo, new Price(67.89m)},
 			};
 
-			prices.ConnectTo(pos);			
-			var priceSpy = new EventSpy<PriceRequiredEventArgs>((_, e) => Check.That(() => e.ItemPrice.Value == prices[e.Barcode]));			
+			prices.ConnectTo(pos);
+			var priceSpy = new EventSpy<PriceRequiredEventArgs>();
 			pos.PriceRequired += priceSpy;
 
 			pos.ProcessBarcode(productOne);
 			pos.ProcessBarcode(productTwo);
 
-			Assume.That(() => priceSpy.HasBeenCalled);
+			priceSpy.Check((_, e) => e.ItemPrice.Value == prices[e.Barcode]);
 		}
 
 		public void signals_unknown_item() {
@@ -43,7 +43,7 @@ namespace PointOfSale
 			pos.ProcessBarcode(new Barcode("Unknown Item"));
 
 			Assume.That(() => !itemAdded.HasBeenCalled);
-			itemMissing.Then((_, e) => Check.That(() => e.Barcode.ToString() == "No Such Item"));
+			itemMissing.Check((_, e) => e.Barcode.ToString() == "Unknown Item");
 		}
 
 		public void null_barcode() =>
