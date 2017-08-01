@@ -1,5 +1,4 @@
-﻿using System;
-using Cone;
+﻿using Cone;
 
 namespace PointOfSale
 {
@@ -7,10 +6,6 @@ namespace PointOfSale
     public class ScanningAnItemFeature
     {
 		public TerminalAndDisplayContext Pos = new TerminalAndDisplayContext();
-
-		[BeforeEach]
-		public void given_a_terminal_with_attached_display() {
-		}
 
 		public void scan_a_code_show_the_price() {
 			var existingBarcode = "123456789";
@@ -28,6 +23,5 @@ namespace PointOfSale
 			Pos.ProcessBarcode(string.Empty);
 			Check.That(() => Pos.DisplayText == "Scanning Error: Empty Barcode");
 		}
-
     }
 }
