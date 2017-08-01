@@ -38,6 +38,7 @@ namespace PointOfSale
 
 		public void Connect(Display display) {
 			ItemAdded += (_, e) => display.Text = e.ItemPrice;
+			MissingItem += (_, e) => display.Text = $"Missing Product <{e.Barcode}>";
 		}
 	}
 }

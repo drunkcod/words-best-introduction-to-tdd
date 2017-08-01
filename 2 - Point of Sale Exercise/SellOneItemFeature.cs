@@ -24,5 +24,16 @@ namespace PointOfSale
 
 			Check.That(() => display.Text == ExpectedPrice);
 		}
+
+		public void display_missing_message_for_missing_product() {
+			var pos = new PosTerminal();
+			var display = new Display();
+
+			pos.Connect(display);
+
+			pos.ProcessBarcode("No Such Thing");
+
+			Check.That(() => display.Text == "Missing Product <No Such Thing>");
+		}
     }
 }
