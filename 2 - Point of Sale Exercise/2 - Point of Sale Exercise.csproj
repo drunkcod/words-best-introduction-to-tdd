@@ -51,6 +51,7 @@
     <Compile Include="Display.cs" />
     <Compile Include="PosTerminal.cs" />
     <Compile Include="PosTerminalSpec.cs" />
+    <Compile Include="Sale.cs" />
     <Compile Include="SellOneItemFeature.cs" />
   </ItemGroup>
   <ItemGroup>
