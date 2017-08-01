@@ -19,5 +19,9 @@ namespace PointOfSale
 				display.DisplayError("Scanning Error: Empty Barcode");
 			}
 		}
+
+		public void PressTotal() {
+			display.DisplayError("No Sale in Progress, Try Scanning a Product");
+		}
 	}
 }

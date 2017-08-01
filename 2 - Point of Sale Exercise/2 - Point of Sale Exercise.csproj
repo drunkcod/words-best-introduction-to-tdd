@@ -54,6 +54,7 @@
     <Compile Include="Price.cs" />
     <Compile Include="PriceLookup.cs" />
     <Compile Include="Sale.cs" />
+    <Compile Include="SellingMultipleItemsFeature.cs" />
     <Compile Include="SellOneItemFeature.cs" />
   </ItemGroup>
   <ItemGroup>

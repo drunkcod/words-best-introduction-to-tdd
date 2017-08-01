@@ -1,5 +1,4 @@
 ﻿using Cone;
-using System;
 
 namespace PointOfSale
 {
