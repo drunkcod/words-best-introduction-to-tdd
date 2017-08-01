@@ -2,8 +2,8 @@
 
 namespace PointOfSale
 {
-	[Feature("Sell one item")]
-    public class SellOneItemFeature
+	[Feature("Scanning an item")]
+    public class ScanningAnItemFeature
     {
 		Display display;
 		PriceLookup prices;
