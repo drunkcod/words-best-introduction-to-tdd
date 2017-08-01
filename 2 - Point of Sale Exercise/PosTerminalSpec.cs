@@ -7,20 +7,26 @@ namespace PointOfSale
 	[Describe(typeof(PosTerminal))]
 	public class PosTerminalSpec
 	{
-		public void does_price_lookup_on_scanned_item() { 
-			var pos = new PosTerminal();
+		PosTerminal pos;
+		EventSpy<ItemAddedEventArgs> itemAdded;
 
+		[BeforeEach]
+		public void given_a_pos_terminal() { 
+			pos = new PosTerminal();
+			itemAdded = new EventSpy<ItemAddedEventArgs>();
+			
+			pos.ItemAdded += itemAdded;
+		}
+
+		public void does_price_lookup_on_scanned_item() {
 			var priceRequired = new EventHandler<PriceRequiredEventArgs>((_, e) => {
 				switch(e.Barcode) { 
 					case "12345": e.ItemPrice = "$12.34"; break;
 					case "67890": e.ItemPrice = $"67.89"; break;
 				}
 			});
-			var priceSpy = new EventSpy<PriceRequiredEventArgs>(priceRequired);
-			var itemAdded = new EventSpy<ItemAddedEventArgs>();
-			
+			var priceSpy = new EventSpy<PriceRequiredEventArgs>(priceRequired);			
 			pos.PriceRequired += priceSpy;
-			pos.ItemAdded += itemAdded;
 
 			pos.ProcessBarcode("12345");
 			pos.ProcessBarcode("67890");
@@ -34,18 +40,13 @@ namespace PointOfSale
 		}
 
 		public void signals_unknown_item() {
-			var pos = new PosTerminal();
-			var itemAdded = new EventSpy<ItemAddedEventArgs>();
-			var itemMissing = new EventSpy<ItemAddedEventArgs>((_, e) => Check.That(() => e.Barcode == "No Such Item"));
-
-			pos.ItemAdded += itemAdded;
+			var itemMissing = new EventSpy<ItemAddedEventArgs>();
 			pos.MissingItem += itemMissing;
 
 			pos.ProcessBarcode("No Such Item");
 
-			Check.That(
-				() => !itemAdded.HasBeenCalled,
-				() => itemMissing.HasBeenCalled);
+			Assume.That(() => !itemAdded.HasBeenCalled);
+			itemMissing.Then((_, e) => Check.That(() => e.Barcode == "No Such Item"));
 		}
 	}
 }
