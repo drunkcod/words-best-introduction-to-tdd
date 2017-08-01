@@ -16,15 +16,21 @@ namespace PointOfSale
 					case "67890": e.ItemPrice = $"67.89"; break;
 				}
 			});
-			pos.PriceRequired += priceRequired;
-			pos.ItemAdded += (_, e) => {
-				var priceCheck = new PriceRequiredEventArgs(e.Barcode);
-				priceRequired(null, priceCheck);
-				Check.That(() => e.ItemPrice == priceCheck.ItemPrice);
-			};
+			var priceSpy = new EventSpy<PriceRequiredEventArgs>(priceRequired);
+			var itemAdded = new EventSpy<ItemAddedEventArgs>();
+			
+			pos.PriceRequired += priceSpy;
+			pos.ItemAdded += itemAdded;
 
 			pos.ProcessBarcode("12345");
 			pos.ProcessBarcode("67890");
+
+			Assume.That(() => priceSpy.HasBeenCalled);
+			itemAdded.Then((_, e) => {
+				var priceCheck = new PriceRequiredEventArgs(e.Barcode);
+				priceRequired(null, priceCheck);
+				Check.That(() => e.ItemPrice != priceCheck.ItemPrice);
+			});
 		}
 
 		public void signals_unknown_item() {
