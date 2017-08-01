@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Barcode.cs" />
     <Compile Include="Display.cs" />
     <Compile Include="PosTerminal.cs" />
     <Compile Include="PosTerminalSpec.cs" />

@@ -1,4 +1,5 @@
 ﻿using Cone;
+using System;
 
 namespace PointOfSale
 {
@@ -17,19 +18,26 @@ namespace PointOfSale
 		}
 
 		public void scan_a_code_show_the_price() {
-			const string ExistingBarcode = "123456789";
-			const string ExpectedPrice = "$11.50";
+			var existingBarcode = new Barcode("123456789");
+			var expectedPrice = "$11.50";
 
-			pos.PriceRequired += (_, e) => e.ItemPrice = ExpectedPrice;
-			pos.ProcessBarcode(ExistingBarcode);
+			pos.PriceRequired += (_, e) => e.ItemPrice = expectedPrice;
+			pos.ProcessBarcode(existingBarcode);
 
-			Check.That(() => display.Text == ExpectedPrice);
+			Check.That(() => display.Text == expectedPrice);
 		}
 
 		public void display_missing_message_for_missing_product() {
-			pos.ProcessBarcode("No Such Thing");
+			pos.ProcessBarcode(new Barcode("No Such Thing"));
 
 			Check.That(() => display.Text == "Missing Product <No Such Thing>");
 		}
     }
+
+	[Describe(typeof(Barcode))]
+	public class BarcodeSpec
+	{
+		public void barcode_cant_be_empty() => Check.Exception<ArgumentException>(() => new Barcode(string.Empty));
+		public void barcode_cant_be_null() => Check.Exception<ArgumentException>(() => new Barcode(null));
+	}
 }

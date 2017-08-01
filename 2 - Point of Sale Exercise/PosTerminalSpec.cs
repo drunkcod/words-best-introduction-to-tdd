@@ -20,7 +20,7 @@ namespace PointOfSale
 
 		public void does_price_lookup_on_scanned_item() {
 			var priceRequired = new EventHandler<PriceRequiredEventArgs>((_, e) => {
-				switch(e.Barcode) { 
+				switch(e.Barcode.ToString()) { 
 					case "12345": e.ItemPrice = "$12.34"; break;
 					case "67890": e.ItemPrice = $"67.89"; break;
 				}
@@ -28,8 +28,8 @@ namespace PointOfSale
 			var priceSpy = new EventSpy<PriceRequiredEventArgs>(priceRequired);			
 			pos.PriceRequired += priceSpy;
 
-			pos.ProcessBarcode("12345");
-			pos.ProcessBarcode("67890");
+			pos.ProcessBarcode(new Barcode("12345"));
+			pos.ProcessBarcode(new Barcode("67890"));
 
 			Assume.That(() => priceSpy.HasBeenCalled);
 			itemAdded.Then((_, e) => {
@@ -43,10 +43,10 @@ namespace PointOfSale
 			var itemMissing = new EventSpy<ItemAddedEventArgs>();
 			pos.MissingItem += itemMissing;
 
-			pos.ProcessBarcode("No Such Item");
+			pos.ProcessBarcode(new Barcode("Unknown Item"));
 
 			Assume.That(() => !itemAdded.HasBeenCalled);
-			itemMissing.Then((_, e) => Check.That(() => e.Barcode == "No Such Item"));
+			itemMissing.Then((_, e) => Check.That(() => e.Barcode.ToString() == "No Such Item"));
 		}
 	}
 }
