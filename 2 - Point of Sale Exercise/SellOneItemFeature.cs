@@ -18,18 +18,16 @@ namespace PointOfSale
 		}
 
 		public void scan_a_code_show_the_price() {
-			var existingBarcode = new Barcode("123456789");
+			var existingBarcode = "123456789";
 			var expectedPrice = "$11.50";
-
 			pos.PriceRequired += (_, e) => e.ItemPrice = expectedPrice;
-			pos.ProcessBarcode(existingBarcode);
-
+			
+			ProcessBarcode(existingBarcode);
 			Check.That(() => display.Text == expectedPrice);
 		}
 
 		public void display_missing_message_for_missing_product() {
-			pos.ProcessBarcode(new Barcode("No Such Thing"));
-
+			ProcessBarcode("No Such Thing");
 			Check.That(() => display.Text == "Missing Product <No Such Thing>");
 		}
 
