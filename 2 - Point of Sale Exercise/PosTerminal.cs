@@ -6,12 +6,10 @@ namespace PointOfSale
 	{
 		public readonly Barcode Barcode;
 		public readonly Price ItemPrice;
-		public readonly Price Total;
 
-		public ItemAddedEventArgs(Barcode barcode, Price itemPrice, Price total) { 
+		public ItemAddedEventArgs(Barcode barcode, Price itemPrice) { 
 			this.Barcode = barcode;
 			this.ItemPrice = itemPrice;
-			this.Total = total;
 		}
 	}
 
@@ -38,8 +36,6 @@ namespace PointOfSale
 
 	class PosTerminal
 	{
-		Price totalPrice;
-
 		public event EventHandler<ItemAddedEventArgs> ItemAdded;
 		public event EventHandler<MissingItemEventArgs> MissingItem;
 		public event EventHandler<PriceRequiredEventArgs> PriceRequired;
@@ -51,8 +47,7 @@ namespace PointOfSale
 			PriceRequired?.Invoke(this, priceCheck);
 			if(priceCheck.PriceFound) {
 				var itemPrice = priceCheck.ItemPrice.Value;
-				totalPrice += itemPrice;
-				ItemAdded?.Invoke(this, new ItemAddedEventArgs(priceCheck.Barcode, itemPrice, totalPrice));
+				ItemAdded?.Invoke(this, new ItemAddedEventArgs(priceCheck.Barcode, itemPrice));
 			}
 			else MissingItem?.Invoke(this, new MissingItemEventArgs(priceCheck.Barcode));
 		}

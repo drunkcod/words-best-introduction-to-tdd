@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PointOfSale
 {
@@ -7,13 +9,13 @@ namespace PointOfSale
 		readonly PosTerminal terminal;
 		readonly Display display;
 
-		Price? total;
+		readonly List<Price> total = new List<Price>();
 
 		public Sale(PosTerminal terminal, Display display) { 
 			this.terminal = terminal;
 			this.display = display;
 			
-			terminal.ItemAdded += (_, e) => total = e.Total;
+			terminal.ItemAdded += (_, e) => total.Add(e.ItemPrice);
 		}
 
 		public void ProcessBarcode(string input) {
@@ -25,8 +27,8 @@ namespace PointOfSale
 		}
 
 		public void PressTotal() {
-			if(total.HasValue)
-				display.DisplayTotal(total.Value);
+			if(total.Count > 0)
+				display.DisplayTotal(total.Aggregate((a, b) => a + b));
 			else
 				display.DisplayError("No Sale in Progress, Try Scanning a Product");
 		}
