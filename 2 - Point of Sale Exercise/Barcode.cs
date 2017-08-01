@@ -13,5 +13,12 @@ namespace PointOfSale
 		}
 
 		public override string ToString() => value;
+		public override int GetHashCode() => value.GetHashCode();
+		public override bool Equals(object obj) {
+			var other = obj as Barcode;
+			if(other == null)
+				return false;
+			return other.value == this.value;
+		}
 	}
 }

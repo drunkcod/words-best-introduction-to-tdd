@@ -5,12 +5,12 @@ namespace PointOfSale
 {
 	class PriceLookup : IEnumerable<KeyValuePair<Barcode, Price>>
 	{
-		readonly Dictionary<string, Price> barcodeToPrice = new Dictionary<string, Price>();
+		readonly Dictionary<Barcode, Price> barcodeToPrice = new Dictionary<Barcode, Price>();
 
-		public Price this[Barcode barcode] => barcodeToPrice[barcode.ToString()];
+		public Price this[Barcode barcode] => barcodeToPrice[barcode];
 
 		public void Add(Barcode item, Price price) =>
-			barcodeToPrice.Add(item.ToString(), price);
+			barcodeToPrice.Add(item, price);
 
 		public void ConnectTo(PosTerminal terminal) {
 			terminal.PriceRequired += (_, e) => {
@@ -19,14 +19,12 @@ namespace PointOfSale
 			};
 		}
 
-		public IEnumerator<KeyValuePair<Barcode, Price>> GetEnumerator() {
-			foreach(var item in barcodeToPrice)
-				yield return new KeyValuePair<Barcode, Price>(new Barcode(item.Key), item.Value);
-		}
-
+		public IEnumerator<KeyValuePair<Barcode, Price>> GetEnumerator() => 
+			barcodeToPrice.GetEnumerator();
+		
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 		bool TryGetPrice(Barcode barcode, out Price itemPrice) => 
-			barcodeToPrice.TryGetValue(barcode.ToString(), out itemPrice);
+			barcodeToPrice.TryGetValue(barcode, out itemPrice);
 	}
 }
