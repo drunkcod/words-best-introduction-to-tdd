@@ -8,7 +8,19 @@ namespace PointOfSale
 	{
 		readonly PosTerminal terminal;
 		readonly Display display;
-		readonly List<Price> items = new List<Price>();
+
+		class SaleItems
+		{
+			readonly List<Price> items = new List<Price>();
+
+			public void Add(Price itemPrice) => items.Add(itemPrice);
+
+			public Price TotalPrice => items.Aggregate((a, b) => a + b);
+
+			public bool HasItems => items.Count > 0;
+		}	
+		
+		readonly SaleItems items = new SaleItems();
 
 		public Sale(PosTerminal terminal, Display display) { 
 			this.terminal = terminal;
@@ -26,13 +38,10 @@ namespace PointOfSale
 		}
 
 		public void PressTotal() {
-			if(IsSaleInProgress)
-				display.DisplayTotal(TotalPrice);
+			if(items.HasItems)
+				display.DisplayTotal(items.TotalPrice);
 			else
 				display.DisplayError("No Sale in Progress, Try Scanning a Product");
 		}
-
-		Price TotalPrice => items.Aggregate((a, b) => a + b);
-		bool IsSaleInProgress => items.Count > 0;
 	}
 }
