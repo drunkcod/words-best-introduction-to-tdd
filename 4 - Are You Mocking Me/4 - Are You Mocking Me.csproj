@@ -12,7 +12,6 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <IntermediateOutputPath>$(SolutionDir)Build\obj\$(Configuration)\$(MSBuildProjectName)</IntermediateOutputPath>
     <OutputPath>$(SolutionDir)Build\$(Configuration)\$(MSBuildProjectName)</OutputPath>
-
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -47,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\2 - Point of Sale Exercise\Barcode.cs">
+      <Link>Barcode.cs</Link>
+    </Compile>
+    <Compile Include="..\2 - Point of Sale Exercise\Price.cs">
+      <Link>Price.cs</Link>
+    </Compile>
     <Compile Include="SalesControllerSpec.cs" />
   </ItemGroup>
   <ItemGroup>
